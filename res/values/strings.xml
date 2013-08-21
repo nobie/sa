@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Sesame</string>
+    <string name="dummy_button">GO</string>
+    <string name="dummy_content">Welcome</string>
+    <string name="button_name1">HttpURLConnect</string>
+    <string name="button_name2">HttpClient</string>
+    <string name="button_app">button</string>
+    <string name="button_text">init text</string>
+    <string name="button_app_name">button_test</string>
+
+</resources>
