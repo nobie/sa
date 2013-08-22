@@ -45,24 +45,31 @@ import android.util.Log;
  */
 public class ButtonActivity extends Activity {
 	
-	private static final String destUrl="http://192.168.1.11/cgi-bin/luci/entry";
+	private static final String destUrl="http://192.168.1.11/cgi-bin/ctrled?Go";
+//	private static final String destUrl="http://192.168.1.11/cgi-bin/luci/entry";
+	private static final String tagST="<status>";
+	private static final String tagST_end="</status>";
+	private static final String tagMsg="<message>";
+	private static final String tagMsg_end="</message>";
 
-
+    private  static boolean bClient=true; 
+    private  static boolean bURLconn=true; 
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_fullscreen);
 		
-        findViewById(R.id.Go_1).setOnClickListener(new Button.OnClickListener(){ 
-            public void onClick(View v)
-            {
-                //Toast提示
-//                Toast.makeText(getApplicationContext(), "连接。。。",
-//                		Toast.LENGTH_LONG).show();
-                new Thread(urlConn).start();
-            }
-        });
+//        findViewById(R.id.Go_1).setOnClickListener(new Button.OnClickListener(){ 
+//            public void onClick(View v)
+//            {
+//           	if (bURLconn){
+//                new Thread(urlConn).start();
+//                bURLconn = false;
+//            	}
+//            }
+//        });
 		
         findViewById(R.id.Go_2).setOnClickListener(new Button.OnClickListener(){ 
             public void onClick(View v)
@@ -70,7 +77,10 @@ public class ButtonActivity extends Activity {
                 //Toast提示
 //                Toast.makeText(getApplicationContext(), "连接。。。",
 //                		Toast.LENGTH_LONG).show();
+            	if (bClient){
                 new Thread(httpClientConn).start();
+                bClient = false;
+            	}
             }
 	     });
 	}
@@ -80,23 +90,21 @@ public class ButtonActivity extends Activity {
 	Runnable httpClientConn = new Runnable() {
 
     	public void run(){
+            synchronized(this) {    //   
 	        //DefaultHttpClient
 	
 	        DefaultHttpClient httpclient = new DefaultHttpClient();
 	           EditText passView =(EditText) findViewById(R.id.pwd);
 	            String password=passView.getText().toString();
  	
-	        //HttpGet
-	        HttpGet httpget = new HttpGet("http://192.168.1.11/cgi-bin/luci/entry?ledtoggle=GO&password=123");
-//        	String destUrl="http://192.168.1.11/cgi-bin/luci/entry";
-        
+      
 	        try {
 	            //instantiate HttpPost object from the url address
 	            HttpEntityEnclosingRequestBase httpPost =new HttpPost(destUrl);
 
 	           List <NameValuePair> params=new ArrayList<NameValuePair>();
-	           params.add(new BasicNameValuePair("ledtoggle", "GO"));
 	           params.add(new BasicNameValuePair("password", password));
+	           params.add(new BasicNameValuePair("ledtoggle", "GO"));
 		        httpPost.setEntity(new UrlEncodedFormEntity(params,HTTP.UTF_8));
 
 		        //ResponseHandler
@@ -117,9 +125,11 @@ public class ButtonActivity extends Activity {
 	            Log.e("httpClientConn Exception:", e.toString());
 	
 	        } finally {
-	
+	        	bClient = true;
+
 		        httpclient.getConnectionManager().shutdown();
 	        }
+    	  }
 	    }
 	};
 	
@@ -128,6 +138,7 @@ public class ButtonActivity extends Activity {
    	Runnable urlConn = new Runnable() {
 
 	    public void run(){
+	          synchronized(this) {    // 
 	 
             HttpURLConnection httpconn = null;
             EditText passView =(EditText) findViewById(R.id.pwd);
@@ -143,7 +154,7 @@ public class ButtonActivity extends Activity {
 	            httpconn.setRequestProperty("Content-type", "application/x-www-form-urlencoded"); 
 	            httpconn.setDoOutput(true);
 	            httpconn.setRequestMethod("POST");
-	            String params="ledtoggle=GO&password="+password;
+	            String params="password="+password+"&ledtoggle=GO";
 	            httpconn.getOutputStream().write(params.getBytes());
 	            httpconn.getOutputStream().flush();
 	            httpconn.getOutputStream().close();
@@ -171,9 +182,11 @@ public class ButtonActivity extends Activity {
 	            Log.e("urlConn Exception:", e.toString());
 	        }finally {
 	            //disconnect   
+                bURLconn = true;
 	            if(httpconn!=null)
 	            	httpconn.disconnect();
 	        }
+	      }
 	    }
     };
 
@@ -184,10 +197,10 @@ public class ButtonActivity extends Activity {
     		final TextView statusView = (TextView)findViewById(R.id.fullscreen_content);
             Bundle data = msg.getData();
             String strResponse = data.getString("resp");
-            String resMsg = strResponse.substring(strResponse.indexOf("<status>")+8, strResponse.indexOf("</status>"));
+            String resMsg = strResponse.substring(strResponse.indexOf(tagST)+tagST.length(), strResponse.indexOf(tagST_end));
             statusView.setText(resMsg);
     		final TextView msgView = (TextView)findViewById(R.id.message);
-    		resMsg = strResponse.substring(strResponse.indexOf("<message>")+9, strResponse.indexOf("</message>"));
+    		resMsg = strResponse.substring(strResponse.indexOf(tagMsg)+tagMsg.length(), strResponse.indexOf(tagMsg_end));
     		msgView.setText(resMsg);
         }
     };    
