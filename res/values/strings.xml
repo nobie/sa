@@ -9,5 +9,6 @@
     <string name="button_app">button</string>
     <string name="button_text">init text</string>
     <string name="button_app_name">button_test</string>
+    <string name="default_url">http://192.168.1.11/cgi-bin/ctrl?Go</string>
 
 </resources>

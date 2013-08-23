@@ -26,13 +26,18 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class id {
         public static final int Go_2=0x7f070001;
+        public static final int edit_url=0x7f070006;
         public static final int fullscreen_content=0x7f070003;
         public static final int fullscreen_content_controls=0x7f070000;
         public static final int message=0x7f070004;
         public static final int pwd=0x7f070002;
+        public static final int setup_ok=0x7f070008;
+        public static final int setup_reset=0x7f070007;
+        public static final int text_url=0x7f070005;
     }
     public static final class layout {
         public static final int activity_fullscreen=0x7f030000;
+        public static final int activity_setting=0x7f030001;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
@@ -41,6 +46,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int button_name1=0x7f050003;
         public static final int button_name2=0x7f050004;
         public static final int button_text=0x7f050006;
+        public static final int default_url=0x7f050008;
         public static final int dummy_button=0x7f050001;
         public static final int dummy_content=0x7f050002;
     }
